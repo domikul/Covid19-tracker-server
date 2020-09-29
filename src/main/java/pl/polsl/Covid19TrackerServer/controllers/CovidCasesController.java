@@ -1,8 +1,14 @@
 package pl.polsl.Covid19TrackerServer.controllers;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.polsl.Covid19TrackerServer.models.CountryStats;
 import pl.polsl.Covid19TrackerServer.services.CovidCasesService;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/covidTracker")
@@ -13,17 +19,12 @@ public class CovidCasesController {
     public CovidCasesController(CovidCasesService covidCasesService) {
         this.covidCasesService = covidCasesService;
     }
-//
-//    @GetMapping(value = "/latestStats")
-//    public ResponseEntity<List<LocationStats>> getLatestData() throws IOException, InterruptedException {
-//        final List<LocationStats> latestCasesList = confirmedCasesService.getLatestConfirmedCases();
-//        return ResponseEntity.ok(latestCasesList);
-//    }
-//
-//    @GetMapping(value = "/latestStats/{country}")
-//    public ResponseEntity<LocationStats> getLatestDataByCountry(@PathVariable final String country) throws IOException, InterruptedException {
-//        final LocationStats latestCases = confirmedCasesService.getLatestConfirmedCasesByCountry(country);
-//        return ResponseEntity.ok(latestCases);
-//    }
+
+    //http://localhost:8080/covidTracker/latestStats
+    @GetMapping(value = "/latestStats")
+    public ResponseEntity<List<CountryStats>> getLatestData() {
+        final List<CountryStats> latestCasesList = covidCasesService.allCountriesLatestCases();
+        return ResponseEntity.ok(latestCasesList);
+    }
 
 }
