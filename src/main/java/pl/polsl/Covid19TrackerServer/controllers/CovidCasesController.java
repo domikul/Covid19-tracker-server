@@ -1,14 +1,12 @@
 package pl.polsl.Covid19TrackerServer.controllers;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.polsl.Covid19TrackerServer.models.CountryStats;
 import pl.polsl.Covid19TrackerServer.services.CovidCasesService;
 
-import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -31,7 +29,15 @@ public class CovidCasesController {
     //http://localhost:8080/covidTracker/latestStats/Poland
     @GetMapping(value = "/latestStats/{country}")
     public ResponseEntity<CountryStats> getLatestDataByCountry(@PathVariable final String country) {
-        final CountryStats latestCases = covidCasesService.singleCountryLatestCases(country);
+        final CountryStats latestCases = covidCasesService.singleCountrySingleDate(country, LocalDate.now().minusDays(1));
+        return ResponseEntity.ok(latestCases);
+    }
+
+    //http://localhost:8080/covidTracker/latestStats/France/date?requestDate=2020-09-16
+    @GetMapping(value = "/latestStats/{country}/date")
+    public ResponseEntity<CountryStats> getLatestDataByCountryAndDate(@PathVariable final String country,
+                                                                      @RequestParam(name = "requestDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date) {
+        final CountryStats latestCases = covidCasesService.singleCountrySingleDate(country, date);
         return ResponseEntity.ok(latestCases);
     }
 

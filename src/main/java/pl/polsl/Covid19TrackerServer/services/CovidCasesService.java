@@ -39,7 +39,7 @@ public class CovidCasesService {
         List<CountryStats> resultList = new ArrayList<>();
 
         confirmedList.forEach(it -> {
-            CountryStats countryStats = singleCountryLatestCases(it.get("Country/Region"));
+            CountryStats countryStats = singleCountrySingleDate(it.get("Country/Region"), LocalDate.now().minusDays(1));
             resultList.add(countryStats);
         });
 
@@ -47,14 +47,15 @@ public class CovidCasesService {
 
     }
 
-    public CountryStats singleCountryLatestCases(String country) {
+    public CountryStats singleCountrySingleDate(String country, LocalDate date) {
 
-        CountryStats partialConfirmed = sendPartialResultsInChoosenDate(confirmedList, country, LocalDate.now().minusDays(1), FileType.CONFIRMED);
-        CountryStats partialDeaths = sendPartialResultsInChoosenDate(deathsList, country, LocalDate.now().minusDays(1), FileType.DEATHS);
-        CountryStats partialRecoveres = sendPartialResultsInChoosenDate(recoveredList, country, LocalDate.now().minusDays(1), FileType.RECOVERED);
+        CountryStats partialConfirmed = sendPartialResultsInChoosenDate(confirmedList, country, date, FileType.CONFIRMED);
+        CountryStats partialDeaths = sendPartialResultsInChoosenDate(deathsList, country, date, FileType.DEATHS);
+        CountryStats partialRecovered = sendPartialResultsInChoosenDate(recoveredList, country, date , FileType.RECOVERED);
 
-        return fillCountryStatsEntity(country, partialConfirmed, partialDeaths, partialRecoveres);
+        return fillCountryStatsEntity(country, partialConfirmed, partialDeaths, partialRecovered);
     }
+
 
     private CountryStats sendPartialResultsInChoosenDate(List<CSVRecord> casesList, String country, LocalDate date, FileType status) {
 
@@ -103,4 +104,5 @@ public class CovidCasesService {
 
         return countryStats;
     }
+
 }
