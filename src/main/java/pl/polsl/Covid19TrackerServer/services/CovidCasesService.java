@@ -47,15 +47,45 @@ public class CovidCasesService {
 
     }
 
-    public CountryStats singleCountrySingleDate(String country, LocalDate date) {
+    public List<CountryStats> allCountriesTimeRangeCases(LocalDate startDate, LocalDate endDate) {
 
-        CountryStats partialConfirmed = sendPartialResultsInChoosenDate(confirmedList, country, date, FileType.CONFIRMED);
-        CountryStats partialDeaths = sendPartialResultsInChoosenDate(deathsList, country, date, FileType.DEATHS);
-        CountryStats partialRecovered = sendPartialResultsInChoosenDate(recoveredList, country, date , FileType.RECOVERED);
+        List<CountryStats> resultList = new ArrayList<>();
 
-        return fillCountryStatsEntity(country, partialConfirmed, partialDeaths, partialRecovered);
+        confirmedList.forEach(it -> {
+            CountryStats countryStats = singleCountryCasesInTimeRange(it.get("Country/Region"), startDate, endDate);
+            resultList.add(countryStats);
+        });
+
+        return resultList.stream().distinct().collect(Collectors.toList());
+
     }
 
+
+    public CountryStats singleCountrySingleDate(String country, LocalDate date) {
+
+        CountryStats partialConfirmedData = sendPartialResultsInChoosenDate(confirmedList, country, date, FileType.CONFIRMED);
+        int partialConfirmed = partialConfirmedData.getConfirmedCases();
+        int partialDeaths = sendPartialResultsInChoosenDate(deathsList, country, date, FileType.DEATHS).getDeathsCases();
+        int partialRecovered = sendPartialResultsInChoosenDate(recoveredList, country, date , FileType.RECOVERED).getRecoveredCases();
+        double latitude = partialConfirmedData.getLatitude();
+        double longitude = partialConfirmedData.getLongitude();
+
+        return fillCountryStatsEntity(country, partialConfirmed, partialDeaths, partialRecovered, latitude, longitude);
+    }
+
+    private CountryStats singleCountryCasesInTimeRange(String country, LocalDate startDate, LocalDate endDate) {
+
+        CountryStats startResponse = singleCountrySingleDate(country, startDate);
+        CountryStats endResponse = singleCountrySingleDate(country, endDate);
+
+        int partialConfirmed = endResponse.getConfirmedCases() - startResponse.getConfirmedCases();
+        int partialDeaths = endResponse.getDeathsCases() - startResponse.getDeathsCases();
+        int partialRecovered = endResponse.getRecoveredCases() - startResponse.getRecoveredCases();
+        double latitude = startResponse.getLatitude();
+        double longitude = startResponse.getLongitude();
+
+        return fillCountryStatsEntity(country, partialConfirmed, partialDeaths, partialRecovered, latitude, longitude);
+    }
 
     private CountryStats sendPartialResultsInChoosenDate(List<CSVRecord> casesList, String country, LocalDate date, FileType status) {
 
@@ -92,17 +122,18 @@ public class CovidCasesService {
         return countryStats;
     }
 
-    private CountryStats fillCountryStatsEntity(String country, CountryStats partialConfirmed, CountryStats partialDeaths, CountryStats partialRecovered){
+    private CountryStats fillCountryStatsEntity(String country, int partialConfirmed, int partialDeaths, int partialRecovered, double latitude, double longitude){
 
         CountryStats countryStats = new CountryStats();
         countryStats.setCountry(country);
-        countryStats.setConfirmedCases(partialConfirmed.getConfirmedCases());
-        countryStats.setDeathsCases(partialDeaths.getDeathsCases());
-        countryStats.setRecoveredCases(partialRecovered.getRecoveredCases());
-        countryStats.setLatitude(partialConfirmed.getLatitude());
-        countryStats.setLongitude(partialConfirmed.getLongitude());
+        countryStats.setConfirmedCases(partialConfirmed);
+        countryStats.setDeathsCases(partialDeaths);
+        countryStats.setRecoveredCases(partialRecovered);
+        countryStats.setLatitude(latitude);
+        countryStats.setLongitude(longitude);
 
         return countryStats;
     }
+
 
 }

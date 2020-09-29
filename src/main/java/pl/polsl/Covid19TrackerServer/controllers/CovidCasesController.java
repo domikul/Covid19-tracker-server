@@ -33,12 +33,12 @@ public class CovidCasesController {
         return ResponseEntity.ok(latestCases);
     }
 
-    //http://localhost:8080/covidTracker/latestStats/France/date?requestDate=2020-09-16
-    @GetMapping(value = "/latestStats/{country}/date")
-    public ResponseEntity<CountryStats> getLatestDataByCountryAndDate(@PathVariable final String country,
-                                                                      @RequestParam(name = "requestDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date) {
-        final CountryStats latestCases = covidCasesService.singleCountrySingleDate(country, date);
-        return ResponseEntity.ok(latestCases);
+    //http://localhost:8080/covidTracker/latestStats/dateRange?startDate=2020-09-05&endDate=2020-09-08
+    @GetMapping(value = "/latestStats/dateRange")
+    public ResponseEntity<List<CountryStats>> getAllCountriesDataInTimeRange(@RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate startDate,
+                                                                             @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate) {
+        final List<CountryStats> latestCasesList = covidCasesService.allCountriesTimeRangeCases(startDate, endDate);
+        return ResponseEntity.ok(latestCasesList);
     }
 
 }
