@@ -47,7 +47,7 @@ public class CovidCasesService {
 
     }
 
-    private CountryStats singleCountryLatestCases(String country) {
+    public CountryStats singleCountryLatestCases(String country) {
 
         CountryStats partialConfirmed = sendPartialResultsInChoosenDate(confirmedList, country, LocalDate.now().minusDays(1), FileType.CONFIRMED);
         CountryStats partialDeaths = sendPartialResultsInChoosenDate(deathsList, country, LocalDate.now().minusDays(1), FileType.DEATHS);
