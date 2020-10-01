@@ -3,61 +3,18 @@ package pl.polsl.Covid19TrackerServer.models;
 import java.util.Objects;
 
 public class CountryStats {
+
     private String country;
     private int confirmedCases;
     private int recoveredCases;
     private int deathsCases;
-    private double latitude;
-    private double longitude;
 
-    public CountryStats() {}
 
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
+    public CountryStats(String country, int confirmedCases, int recoveredCases, int deathsCases) {
         this.country = country;
-    }
-
-    public int getConfirmedCases() {
-        return confirmedCases;
-    }
-
-    public void setConfirmedCases(int confirmedCases) {
         this.confirmedCases = confirmedCases;
-    }
-
-    public int getRecoveredCases() {
-        return recoveredCases;
-    }
-
-    public void setRecoveredCases(int recoveredCases) {
         this.recoveredCases = recoveredCases;
-    }
-
-    public int getDeathsCases() {
-        return deathsCases;
-    }
-
-    public void setDeathsCases(int deathsCases) {
         this.deathsCases = deathsCases;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
     }
 
     @Override
@@ -67,8 +24,6 @@ public class CountryStats {
                 ", confirmedCases=" + confirmedCases +
                 ", recoveredCases=" + recoveredCases +
                 ", deathsCases=" + deathsCases +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
                 '}';
     }
 
@@ -82,6 +37,6 @@ public class CountryStats {
 
     @Override
     public int hashCode() {
-        return Objects.hash(country, confirmedCases, recoveredCases, deathsCases, latitude, longitude);
+        return Objects.hash(country, confirmedCases, recoveredCases, deathsCases);
     }
 }

@@ -18,21 +18,19 @@ import java.util.List;
 public class CsvFileReader {
 
     public List<CSVRecord> fetchData(FileType typeOfFile) throws IOException, InterruptedException {
-
         List<CSVRecord> recordsList = new ArrayList<>();
 
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(typeOfFile.returnURL(typeOfFile)))
+                .uri(URI.create(typeOfFile.returnURL()))
                 .build();
 
         HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         StringReader csvBodyReader = new StringReader(httpResponse.body());
-        Iterable<CSVRecord> CsvRecords = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader);
+        Iterable<CSVRecord> CsvRecords = CSVFormat.DEFAULT.withFirstRecordAsHeader()
+                .parse(csvBodyReader);
 
-        for (CSVRecord record : CsvRecords) {
-            recordsList.add(record);
-        }
+        CsvRecords.forEach(recordsList::add);
         return recordsList;
 
     }

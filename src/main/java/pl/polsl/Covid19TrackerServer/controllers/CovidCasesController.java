@@ -22,14 +22,14 @@ public class CovidCasesController {
     //http://localhost:8080/covidTracker/latestStats
     @GetMapping(value = "/latestStats")
     public ResponseEntity<List<CountryStats>> getLatestData() {
-        final List<CountryStats> latestCasesList = covidCasesService.allCountriesLatestCases();
+        final List<CountryStats> latestCasesList = covidCasesService.allCountriesTimeRangeCases(null, LocalDate.now().minusDays(1));
         return ResponseEntity.ok(latestCasesList);
     }
 
     //http://localhost:8080/covidTracker/latestStats/Poland
     @GetMapping(value = "/latestStats/{country}")
     public ResponseEntity<CountryStats> getLatestDataByCountry(@PathVariable final String country) {
-        final CountryStats latestCases = covidCasesService.singleCountrySingleDate(country, LocalDate.now().minusDays(1));
+        final CountryStats latestCases = covidCasesService.singleCountryCasesInTimeRange(country, null, LocalDate.now().minusDays(1));
         return ResponseEntity.ok(latestCases);
     }
 

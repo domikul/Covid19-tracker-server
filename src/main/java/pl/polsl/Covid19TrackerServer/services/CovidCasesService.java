@@ -1,6 +1,7 @@
 package pl.polsl.Covid19TrackerServer.services;
 
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import pl.polsl.Covid19TrackerServer.models.CountryStats;
@@ -17,9 +18,9 @@ import java.util.stream.Collectors;
 public class CovidCasesService {
 
     private final CsvFileReader csvFileReader;
-    List<CSVRecord> confirmedList = new ArrayList<>();
-    List<CSVRecord> deathsList = new ArrayList<>();
-    List<CSVRecord> recoveredList = new ArrayList<>();
+    private List<CSVRecord> confirmedList;
+    private List<CSVRecord> deathsList;
+    private List<CSVRecord> recoveredList;
 
     public CovidCasesService(CsvFileReader csvFileReader) {
         this.csvFileReader = csvFileReader;
@@ -34,106 +35,39 @@ public class CovidCasesService {
     }
 
 
-    public List<CountryStats> allCountriesLatestCases() {
+    public List<CountryStats> allCountriesTimeRangeCases(@Nullable LocalDate startDate, LocalDate endDate) {
 
         List<CountryStats> resultList = new ArrayList<>();
 
         confirmedList.forEach(it -> {
-            CountryStats countryStats = singleCountrySingleDate(it.get("Country/Region"), LocalDate.now().minusDays(1));
-            resultList.add(countryStats);
+            resultList.add(singleCountryCasesInTimeRange(it.get("Country/Region"), startDate, endDate));
         });
 
-        return resultList.stream().distinct().collect(Collectors.toList());
-
+        return resultList.stream()
+                .distinct()
+                .collect(Collectors.toList());
     }
 
-    public List<CountryStats> allCountriesTimeRangeCases(LocalDate startDate, LocalDate endDate) {
+    public CountryStats singleCountryCasesInTimeRange(String country, @Nullable LocalDate startDate, LocalDate endDate) {
+        int partialConfirmed = calculateSubtraction(confirmedList, country, startDate, endDate);
+        int partialDeaths = calculateSubtraction(deathsList, country, startDate, endDate);
+        int partialRecovered = calculateSubtraction(recoveredList, country, startDate, endDate);
 
-        List<CountryStats> resultList = new ArrayList<>();
-
-        confirmedList.forEach(it -> {
-            CountryStats countryStats = singleCountryCasesInTimeRange(it.get("Country/Region"), startDate, endDate);
-            resultList.add(countryStats);
-        });
-
-        return resultList.stream().distinct().collect(Collectors.toList());
-
+        return new CountryStats(country, partialConfirmed, partialRecovered, partialDeaths);
     }
 
+    private int calculateSubtraction(final List<CSVRecord> records, final String country, @Nullable LocalDate startDate, LocalDate endDate) {
+        int partialEnd = sendPartialResultsInChosenDate(records, country, endDate);
+        int partialStart = startDate != null ? sendPartialResultsInChosenDate(records, country, startDate) : 0;
 
-    public CountryStats singleCountrySingleDate(String country, LocalDate date) {
-
-        CountryStats partialConfirmedData = sendPartialResultsInChoosenDate(confirmedList, country, date, FileType.CONFIRMED);
-        int partialConfirmed = partialConfirmedData.getConfirmedCases();
-        int partialDeaths = sendPartialResultsInChoosenDate(deathsList, country, date, FileType.DEATHS).getDeathsCases();
-        int partialRecovered = sendPartialResultsInChoosenDate(recoveredList, country, date , FileType.RECOVERED).getRecoveredCases();
-        double latitude = partialConfirmedData.getLatitude();
-        double longitude = partialConfirmedData.getLongitude();
-
-        return fillCountryStatsEntity(country, partialConfirmed, partialDeaths, partialRecovered, latitude, longitude);
+        return partialEnd - partialStart;
     }
 
-    private CountryStats singleCountryCasesInTimeRange(String country, LocalDate startDate, LocalDate endDate) {
-
-        CountryStats startResponse = singleCountrySingleDate(country, startDate);
-        CountryStats endResponse = singleCountrySingleDate(country, endDate);
-
-        int partialConfirmed = endResponse.getConfirmedCases() - startResponse.getConfirmedCases();
-        int partialDeaths = endResponse.getDeathsCases() - startResponse.getDeathsCases();
-        int partialRecovered = endResponse.getRecoveredCases() - startResponse.getRecoveredCases();
-        double latitude = startResponse.getLatitude();
-        double longitude = startResponse.getLongitude();
-
-        return fillCountryStatsEntity(country, partialConfirmed, partialDeaths, partialRecovered, latitude, longitude);
-    }
-
-    private CountryStats sendPartialResultsInChoosenDate(List<CSVRecord> casesList, String country, LocalDate date, FileType status) {
-
-        int totalSumCases = 0;
-
-        List<CSVRecord> filteredRecords = casesList.stream()
-                .filter(el -> el.get("Country/Region").equals(country)).collect(Collectors.toList());
-
-        totalSumCases += filteredRecords.stream()
+    private int sendPartialResultsInChosenDate(List<CSVRecord> casesList, String country, LocalDate date) {
+        return casesList.stream()
+                .filter(el -> el.get("Country/Region").equals(country))
                 .map(el -> el.get(date.getMonthValue() + "/" + date.getDayOfMonth() + "/" + date.getYear() % 1000))
                 .mapToInt(Integer::valueOf)
                 .sum();
-
-        CSVRecord latest = filteredRecords.get(filteredRecords.size()-1);
-
-        return fillPartialStatsForCountryEntity(latest, totalSumCases, status);
     }
-
-    private CountryStats fillPartialStatsForCountryEntity(CSVRecord record, int totalSumCases, FileType status){
-
-        CountryStats countryStats = new CountryStats();
-
-        countryStats.setLatitude(Double.parseDouble(record.get("Lat")));
-        countryStats.setLongitude(Double.parseDouble(record.get("Long")));
-        countryStats.setCountry(record.get("Country/Region"));
-
-        if(status.equals(FileType.CONFIRMED))
-            countryStats.setConfirmedCases(totalSumCases);
-        else if(status.equals(FileType.DEATHS))
-            countryStats.setDeathsCases(totalSumCases);
-        else if(status.equals(FileType.RECOVERED))
-            countryStats.setRecoveredCases(totalSumCases);
-
-        return countryStats;
-    }
-
-    private CountryStats fillCountryStatsEntity(String country, int partialConfirmed, int partialDeaths, int partialRecovered, double latitude, double longitude){
-
-        CountryStats countryStats = new CountryStats();
-        countryStats.setCountry(country);
-        countryStats.setConfirmedCases(partialConfirmed);
-        countryStats.setDeathsCases(partialDeaths);
-        countryStats.setRecoveredCases(partialRecovered);
-        countryStats.setLatitude(latitude);
-        countryStats.setLongitude(longitude);
-
-        return countryStats;
-    }
-
-
 }
