@@ -1,6 +1,6 @@
-package pl.polsl.Covid19TrackerServer.models;
+package pl.polsl.covid19TrackerServer.models;
 
-import pl.polsl.Covid19TrackerServer.models.enumerations.FileType;
+import pl.polsl.covid19TrackerServer.models.enumerations.FileType;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -9,8 +9,8 @@ import java.util.Map;
 public class ChartStats {
 
     private String country;
-    FileType status;
-    Map<LocalDate, Integer> casesMap;
+    private FileType status;
+    private Map<LocalDate, Integer> casesMap;
 
     public ChartStats(String country, FileType status, Map<LocalDate, Integer> casesMap) {
         this.country = country;

@@ -1,4 +1,4 @@
-package pl.polsl.Covid19TrackerServer;
+package pl.polsl.covid19TrackerServer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

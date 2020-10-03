@@ -1,4 +1,4 @@
-package pl.polsl.Covid19TrackerServer.models;
+package pl.polsl.covid19TrackerServer.models;
 
 import java.util.Objects;
 
@@ -14,6 +14,38 @@ public class CountryStats {
         this.country = country;
         this.confirmedCases = confirmedCases;
         this.recoveredCases = recoveredCases;
+        this.deathsCases = deathsCases;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public int getConfirmedCases() {
+        return confirmedCases;
+    }
+
+    public void setConfirmedCases(int confirmedCases) {
+        this.confirmedCases = confirmedCases;
+    }
+
+    public int getRecoveredCases() {
+        return recoveredCases;
+    }
+
+    public void setRecoveredCases(int recoveredCases) {
+        this.recoveredCases = recoveredCases;
+    }
+
+    public int getDeathsCases() {
+        return deathsCases;
+    }
+
+    public void setDeathsCases(int deathsCases) {
         this.deathsCases = deathsCases;
     }
 

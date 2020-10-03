@@ -1,6 +1,4 @@
-package pl.polsl.Covid19TrackerServer.exceptions;
-
-import java.time.LocalDate;
+package pl.polsl.covid19TrackerServer.exceptions;
 
 public class WrongCsvFileUrlException extends RuntimeException{
 

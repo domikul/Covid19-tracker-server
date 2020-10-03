@@ -1,4 +1,4 @@
-package pl.polsl.Covid19TrackerServer.models.enumerations;
+package pl.polsl.covid19TrackerServer.models.enumerations;
 
 public enum FileType {
 
