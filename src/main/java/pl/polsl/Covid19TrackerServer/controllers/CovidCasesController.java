@@ -41,4 +41,6 @@ public class CovidCasesController {
         return ResponseEntity.ok(latestCasesList);
     }
 
+
+
 }
