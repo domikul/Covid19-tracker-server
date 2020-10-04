@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class Covid19TrackerServerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Covid19TrackerServerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Covid19TrackerServerApplication.class, args);
+    }
 
 }

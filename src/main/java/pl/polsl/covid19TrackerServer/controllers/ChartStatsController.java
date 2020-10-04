@@ -27,7 +27,7 @@ public class ChartStatsController {
             @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate,
             @PathVariable final String status) {
         FileType enumStats = Enum.valueOf(FileType.class, status.toUpperCase());
-        final ChartStats latestCasesList = chartDataService.reportChartDataForCountryInTimeRange(country, enumStats, startDate, endDate) ;
+        final ChartStats latestCasesList = chartDataService.reportChartDataForCountryInTimeRange(country, enumStats, startDate, endDate);
         return ResponseEntity.ok(latestCasesList);
     }
 

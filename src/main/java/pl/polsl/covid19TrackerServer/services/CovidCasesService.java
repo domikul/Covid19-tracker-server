@@ -3,9 +3,13 @@ package pl.polsl.covid19TrackerServer.services;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import pl.polsl.covid19TrackerServer.exceptions.IncorrectDateException;
+import pl.polsl.covid19TrackerServer.exceptions.NoAvailableDataException;
 import pl.polsl.covid19TrackerServer.models.CountryStats;
+
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +43,10 @@ public class CovidCasesService {
     }
 
     private int calculateSubtractionOfDailyCases(final List<CSVRecord> records, final String country, @Nullable LocalDate startDate, LocalDate endDate) {
+
+        if (startDate != null && (startDate.isAfter(endDate) || endDate.isBefore(startDate) || endDate.isAfter(LocalDate.now()) || startDate.equals(endDate)))
+            throw new IncorrectDateException();
+
         int endDateResult = sendPartialResultsInChosenDate(records, country, endDate);
         int startDateResult = startDate != null ? sendPartialResultsInChosenDate(records, country, startDate) : 0;
 
@@ -47,6 +55,9 @@ public class CovidCasesService {
 
 
     public int sendPartialResultsInChosenDate(List<CSVRecord> casesList, String country, LocalDate date) {
+
+        if (date.isBefore(LocalDate.parse("2020-01-22")) || date.equals(LocalDate.now()))
+            throw new NoAvailableDataException(date);
 
         return casesList.stream()
                 .filter(el -> el.get("Country/Region").equals(country))

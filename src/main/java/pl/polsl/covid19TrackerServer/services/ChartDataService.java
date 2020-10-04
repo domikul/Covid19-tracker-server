@@ -21,18 +21,18 @@ public class ChartDataService {
         this.covidCasesService = covidCasesService;
     }
 
-    public ChartStats reportChartDataForCountryInTimeRange(String country, FileType status, LocalDate startDate, LocalDate endDate){
+    public ChartStats reportChartDataForCountryInTimeRange(String country, FileType status, LocalDate startDate, LocalDate endDate) {
 
         List<CSVRecord> casesList = csvFileReader.dictionaryOfListsByStatus.get(status);
 
         Map<LocalDate, Integer> casesMap = new HashMap<>();
 
-        while(!startDate.equals(endDate.plusDays(1))){
+        while (!startDate.equals(endDate.plusDays(1))) {
             int cases = covidCasesService.sendPartialResultsInChosenDate(casesList, country, startDate);
             casesMap.put(startDate, cases);
             startDate = startDate.plusDays(1);
         }
-        return new ChartStats(country,status,casesMap);
+        return new ChartStats(country, status, casesMap);
     }
 
 }

@@ -12,7 +12,7 @@ public enum FileType {
         this.url = url;
     }
 
-    public String returnURL(){
+    public String returnURL() {
         return url;
     }
 

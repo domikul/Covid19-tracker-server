@@ -29,19 +29,22 @@ public class CsvFileReader {
     @PostConstruct
     @Scheduled(cron = "* * 1 * * *")
     private void updateListsOfCases() throws IOException, InterruptedException {
+
         this.confirmedList = fetchData(FileType.CONFIRMED);
         this.deathsList = fetchData(FileType.DEATHS);
         this.recoveredList = fetchData(FileType.RECOVERED);
+        fillDictionary();
     }
 
-    @PostConstruct
-    private void fillDictionary(){
+    private void fillDictionary() {
+        dictionaryOfListsByStatus.clear();
         dictionaryOfListsByStatus.put(FileType.CONFIRMED, confirmedList);
         dictionaryOfListsByStatus.put(FileType.DEATHS, deathsList);
         dictionaryOfListsByStatus.put(FileType.RECOVERED, recoveredList);
     }
 
     public List<CSVRecord> fetchData(FileType typeOfFile) throws IOException, InterruptedException {
+
         List<CSVRecord> recordsList = new ArrayList<>();
 
         HttpClient httpClient = HttpClient.newHttpClient();
