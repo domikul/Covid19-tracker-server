@@ -17,6 +17,9 @@ public class CountryStats {
         this.deathsCases = deathsCases;
     }
 
+    public CountryStats() {
+    }
+
     public String getCountry() {
         return country;
     }

@@ -4,6 +4,7 @@ import pl.polsl.covid19TrackerServer.models.enumerations.FileType;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class ChartStats {
@@ -40,5 +41,20 @@ public class ChartStats {
 
     public void setCasesMap(Map<LocalDate, Integer> casesMap) {
         this.casesMap = casesMap;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChartStats that = (ChartStats) o;
+        return country.equals(that.country) &&
+                status == that.status &&
+                casesMap.equals(that.casesMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(country, status, casesMap);
     }
 }

@@ -10,6 +10,7 @@ import pl.polsl.covid19TrackerServer.models.CountryStats;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +33,21 @@ public class CovidCasesService {
         return resultList.stream()
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public CountryStats showGlobalCasesInTimeRange(@Nullable LocalDate startDate, LocalDate endDate) {
+
+        List<CountryStats> worldList = showWorldCasesInTimeRange(startDate, endDate);
+        CountryStats globalResult = new CountryStats();
+        globalResult.setCountry("Global");
+
+        worldList.forEach(it -> {
+            globalResult.setConfirmedCases(globalResult.getConfirmedCases()+it.getConfirmedCases());
+            globalResult.setDeathsCases(globalResult.getDeathsCases()+it.getDeathsCases());
+            globalResult.setRecoveredCases(globalResult.getRecoveredCases()+it.getRecoveredCases());
+        });
+
+        return globalResult;
     }
 
     public CountryStats showCasesByCountryInTimeRange(String country, @Nullable LocalDate startDate, LocalDate endDate) {
@@ -59,11 +75,43 @@ public class CovidCasesService {
         if (date.isBefore(LocalDate.parse("2020-01-22")) || date.equals(LocalDate.now()))
             throw new NoAvailableDataException(date);
 
+        LocalDate checkedDate = check(casesList, date);
+
         return casesList.stream()
                 .filter(el -> el.get("Country/Region").equals(country))
-                .map(el -> el.get(date.getMonthValue() + "/" + date.getDayOfMonth() + "/" + date.getYear() % 1000))
+                .map(el -> el.get(checkedDate.getMonthValue() + "/" + checkedDate.getDayOfMonth() + "/" + checkedDate.getYear() % 1000))
                 .mapToInt(Integer::valueOf)
                 .sum();
+    }
+
+    public int sendPartialGlobalResultsInChosenDate(List<CSVRecord> casesList, LocalDate date) {
+
+        List<String> listWithCountryNames = new ArrayList<>();
+        casesList.forEach(it ->
+                listWithCountryNames.add(it.get("Country/Region")));
+
+       return listWithCountryNames.stream()
+               .distinct()
+               .mapToInt(it -> sendPartialResultsInChosenDate(casesList, it, date))
+               .sum();
+
+    }
+
+    private LocalDate check(List<CSVRecord> casesList, LocalDate date) {
+
+        if(date.equals(LocalDate.now().minusDays(1))){
+            List<List<String>> headers = casesList.stream().map(it -> it.getParser().getHeaderNames()).collect(Collectors.toList());
+            boolean c = false;
+            for(int i=0; i<headers.get(0).size() - 1 ; i++ ){
+                if (headers.get(0).get(i).equals(date.getMonthValue() + "/" + date.getDayOfMonth() + "/" + date.getYear() % 1000)) {
+                    c = true;
+                    break;
+                }
+            }
+            if(!c)
+                return date.minusDays(1);
+        }
+        return date;
     }
 
 }

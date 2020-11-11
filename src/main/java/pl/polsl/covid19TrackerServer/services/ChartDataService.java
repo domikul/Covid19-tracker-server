@@ -7,6 +7,7 @@ import pl.polsl.covid19TrackerServer.models.enumerations.FileType;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class ChartDataService {
 
         List<CSVRecord> casesList = csvFileReader.dictionaryOfListsByStatus.get(status);
 
-        Map<LocalDate, Integer> casesMap = new HashMap<>();
+        Map<LocalDate, Integer> casesMap = new LinkedHashMap<>();
 
         while (!startDate.equals(endDate.plusDays(1))) {
             int cases = covidCasesService.sendPartialResultsInChosenDate(casesList, country, startDate);
@@ -33,6 +34,20 @@ public class ChartDataService {
             startDate = startDate.plusDays(1);
         }
         return new ChartStats(country, status, casesMap);
+    }
+
+    public ChartStats reportGlobalChartDataInTimeRange(FileType status, LocalDate startDate, LocalDate endDate) {
+
+        List<CSVRecord> casesList = csvFileReader.dictionaryOfListsByStatus.get(status);
+
+        Map<LocalDate, Integer> casesMap = new LinkedHashMap<>();
+
+        while (!startDate.equals(endDate.plusDays(1))) {
+            int cases = covidCasesService.sendPartialGlobalResultsInChosenDate(casesList, startDate);
+            casesMap.put(startDate, cases);
+            startDate = startDate.plusDays(1);
+        }
+        return new ChartStats("Global", status, casesMap);
     }
 
 }

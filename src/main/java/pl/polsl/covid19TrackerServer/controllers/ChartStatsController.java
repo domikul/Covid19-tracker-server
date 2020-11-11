@@ -11,6 +11,7 @@ import java.time.LocalDate;
 
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/covid19Tracker/chart/")
 public class ChartStatsController {
 
@@ -28,6 +29,16 @@ public class ChartStatsController {
             @PathVariable final String status) {
         FileType enumStats = Enum.valueOf(FileType.class, status.toUpperCase());
         final ChartStats latestCasesList = chartDataService.reportChartDataForCountryInTimeRange(country, enumStats, startDate, endDate);
+        return ResponseEntity.ok(latestCasesList);
+    }
+
+    @GetMapping(value = "/global/{status}")
+    public ResponseEntity<ChartStats> getGlobalDataForChart(
+            @RequestParam(name = "from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate startDate,
+            @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate,
+            @PathVariable final String status) {
+        FileType enumStats = Enum.valueOf(FileType.class, status.toUpperCase());
+        final ChartStats latestCasesList = chartDataService.reportGlobalChartDataInTimeRange(enumStats, startDate, endDate);
         return ResponseEntity.ok(latestCasesList);
     }
 

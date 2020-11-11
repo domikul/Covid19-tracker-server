@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/covid19Tracker")
 public class CovidCasesController {
 
@@ -25,6 +26,12 @@ public class CovidCasesController {
         return ResponseEntity.ok(latestCasesList);
     }
 
+    @GetMapping(value = "/total/global")
+    public ResponseEntity<CountryStats> getGlobalLatestData() {
+        final CountryStats latestGlobalCases = covidCasesService.showGlobalCasesInTimeRange(null, LocalDate.now().minusDays(1));
+        return ResponseEntity.ok(latestGlobalCases);
+    }
+
     @GetMapping(value = "/total/{country}")
     public ResponseEntity<CountryStats> getLatestDataByCountry(@PathVariable final String country) {
         final CountryStats latestCases = covidCasesService.showCasesByCountryInTimeRange(country, null, LocalDate.now().minusDays(1));
@@ -36,6 +43,13 @@ public class CovidCasesController {
                                                                              @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate) {
         final List<CountryStats> latestCasesList = covidCasesService.showWorldCasesInTimeRange(startDate, endDate);
         return ResponseEntity.ok(latestCasesList);
+    }
+
+    @GetMapping(value = "/partial/global")
+    public ResponseEntity<CountryStats> getGlobalDataInTimeRange(@RequestParam(name = "from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate startDate,
+                                                                             @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate) {
+        final CountryStats latestGlobalCases = covidCasesService.showGlobalCasesInTimeRange(startDate, endDate);
+        return ResponseEntity.ok(latestGlobalCases);
     }
 
 
