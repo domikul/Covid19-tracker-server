@@ -10,7 +10,6 @@ import pl.polsl.covid19TrackerServer.models.CountryStats;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,7 +74,7 @@ public class CovidCasesService {
         if (date.isBefore(LocalDate.parse("2020-01-22")) || date.equals(LocalDate.now()))
             throw new NoAvailableDataException(date);
 
-        LocalDate checkedDate = check(casesList, date);
+        LocalDate checkedDate = checkIsDataLatest(casesList, date);
 
         return casesList.stream()
                 .filter(el -> el.get("Country/Region").equals(country))
@@ -97,18 +96,18 @@ public class CovidCasesService {
 
     }
 
-    private LocalDate check(List<CSVRecord> casesList, LocalDate date) {
+    private LocalDate checkIsDataLatest(List<CSVRecord> casesList, LocalDate date) {
 
-        if(date.equals(LocalDate.now().minusDays(1))){
+        if (date.equals(LocalDate.now().minusDays(1))){
             List<List<String>> headers = casesList.stream().map(it -> it.getParser().getHeaderNames()).collect(Collectors.toList());
-            boolean c = false;
+            boolean matchDataset = false;
             for(int i=0; i<headers.get(0).size() - 1 ; i++ ){
                 if (headers.get(0).get(i).equals(date.getMonthValue() + "/" + date.getDayOfMonth() + "/" + date.getYear() % 1000)) {
-                    c = true;
+                    matchDataset = true;
                     break;
                 }
             }
-            if(!c)
+            if(!matchDataset)
                 return date.minusDays(1);
         }
         return date;

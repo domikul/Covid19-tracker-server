@@ -45,12 +45,4 @@ public class CovidCasesController {
         return ResponseEntity.ok(latestCasesList);
     }
 
-    @GetMapping(value = "/partial/global")
-    public ResponseEntity<CountryStats> getGlobalDataInTimeRange(@RequestParam(name = "from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate startDate,
-                                                                             @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate) {
-        final CountryStats latestGlobalCases = covidCasesService.showGlobalCasesInTimeRange(startDate, endDate);
-        return ResponseEntity.ok(latestGlobalCases);
-    }
-
-
 }
