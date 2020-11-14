@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.polsl.covid19TrackerServer.models.CountryStats;
 import pl.polsl.covid19TrackerServer.services.CovidCasesService;
 
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,26 +22,26 @@ public class CovidCasesController {
     }
 
     @GetMapping(value = "/total/world")
-    public ResponseEntity<List<CountryStats>> getWorldLatestData() {
-        final List<CountryStats> latestCasesList = covidCasesService.showWorldCasesInTimeRange(null, LocalDate.now().minusDays(1));
+    public ResponseEntity<List<CountryStats>> getWorldLatestData() throws ParseException {
+        final List<CountryStats> latestCasesList = covidCasesService.showWorldCasesInTimeRange(null, null);
         return ResponseEntity.ok(latestCasesList);
     }
 
     @GetMapping(value = "/total/global")
-    public ResponseEntity<CountryStats> getGlobalLatestData() {
-        final CountryStats latestGlobalCases = covidCasesService.showGlobalCasesInTimeRange(null, LocalDate.now().minusDays(1));
+    public ResponseEntity<CountryStats> getGlobalLatestData() throws ParseException {
+        final CountryStats latestGlobalCases = covidCasesService.showGlobalCasesInTimeRange(null, null);
         return ResponseEntity.ok(latestGlobalCases);
     }
 
     @GetMapping(value = "/total/{country}")
-    public ResponseEntity<CountryStats> getLatestDataByCountry(@PathVariable final String country) {
-        final CountryStats latestCases = covidCasesService.showCasesByCountryInTimeRange(country, null, LocalDate.now().minusDays(1));
+    public ResponseEntity<CountryStats> getLatestDataByCountry(@PathVariable final String country) throws ParseException {
+        final CountryStats latestCases = covidCasesService.showCasesByCountryInTimeRange(country, null, null);
         return ResponseEntity.ok(latestCases);
     }
 
     @GetMapping(value = "/partial/world")
     public ResponseEntity<List<CountryStats>> getAllCountriesDataInTimeRange(@RequestParam(name = "from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate startDate,
-                                                                             @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate) {
+                                                                             @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate) throws ParseException {
         final List<CountryStats> latestCasesList = covidCasesService.showWorldCasesInTimeRange(startDate, endDate);
         return ResponseEntity.ok(latestCasesList);
     }

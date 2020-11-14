@@ -16,6 +16,7 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CsvFileReader {
@@ -60,6 +61,13 @@ public class CsvFileReader {
         CsvRecords.forEach(recordsList::add);
         return recordsList;
 
+    }
+
+    public List<String> getHeadersList() {
+        return this.confirmedList
+                .stream()
+                .map(it -> it.getParser().getHeaderNames())
+                .collect(Collectors.toList()).get(0);
     }
 
 }
