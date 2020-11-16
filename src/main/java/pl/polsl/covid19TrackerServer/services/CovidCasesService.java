@@ -115,34 +115,14 @@ public class CovidCasesService {
 
     }
 
-
-//    private LocalDate checkIsLastDayUpdateYet(LocalDate date) {
-//        LocalDate finalDate = date;
-//
-//        if (date.equals(LocalDate.now().minusDays(1))) {
-//            List<String> headers = csvFileReader.getHeadersList();
-//
-//            while (!headers.get(headers.size() - 1).equals(date.toString())) {
-//                date = date.minusDays(1);
-//                finalDate = date;
-//            }
-//        }
-//        return finalDate;
-//    }
-
     private void checkIsLastDayUpdateYet(LocalDate date) {
 
         if (date.equals(LocalDate.now().minusDays(1))){
             List<String> headers = csvFileReader.getHeadersList();
-            boolean matchDataset = false;
-            for(int i=0; i<headers.size() - 1 ; i++ ){
-                if (headers.get(i).equals(date.getMonthValue() + "/" + date.getDayOfMonth() + "/" + date.getYear() % 1000)) {
-                    matchDataset = true;
-                    break;
-                }
-            }
-            if(!matchDataset)
+
+            if (!headers.get(headers.size() - 1 ).equals(date.getMonthValue() + "/" + date.getDayOfMonth() + "/" + date.getYear() % 1000)) {
                 throw new NoAvailableDataException(date);
+            }
         }
     }
 
