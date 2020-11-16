@@ -4,6 +4,6 @@ import java.time.LocalDate;
 
 public class NoAvailableDataException extends RuntimeException {
     public NoAvailableDataException(LocalDate date) {
-        super("The data for " + date + " is not yet registered. Please choose another day.");
+        super("Dane na dzień " + date + " nie są jeszcze dostępne. Proszę wybrać inny dzień.");
     }
 }

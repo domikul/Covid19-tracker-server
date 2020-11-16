@@ -32,13 +32,10 @@ public class ChartStatsController {
         return ResponseEntity.ok(latestCasesList);
     }
 
-    @GetMapping(value = "/global/{status}")
-    public ResponseEntity<ChartStats> getGlobalDataForChart(
-            @RequestParam(name = "from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate startDate,
-            @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate,
-            @PathVariable final String status) {
+    @GetMapping(value = "/global/all/{status}")
+    public ResponseEntity<ChartStats> getGlobalDataForChart(@PathVariable final String status) {
         FileType enumStats = Enum.valueOf(FileType.class, status.toUpperCase());
-        final ChartStats latestCasesList = chartDataService.reportGlobalChartDataInTimeRange(enumStats, startDate, endDate);
+        final ChartStats latestCasesList = chartDataService.reportGlobalChartDataInAllTheTime(enumStats);
         return ResponseEntity.ok(latestCasesList);
     }
 

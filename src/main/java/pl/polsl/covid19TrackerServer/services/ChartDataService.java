@@ -2,6 +2,7 @@ package pl.polsl.covid19TrackerServer.services;
 
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Service;
+import pl.polsl.covid19TrackerServer.exceptions.IncorrectDateException;
 import pl.polsl.covid19TrackerServer.models.ChartStats;
 import pl.polsl.covid19TrackerServer.models.enumerations.FileType;
 
@@ -24,6 +25,9 @@ public class ChartDataService {
 
     public ChartStats reportChartDataForCountryInTimeRange(String country, FileType status, LocalDate startDate, LocalDate endDate) {
 
+        if (startDate != null && (startDate.isAfter(endDate) || endDate.isBefore(startDate) || endDate.isAfter(LocalDate.now()) || startDate.equals(endDate)))
+            throw new IncorrectDateException();
+
         List<CSVRecord> casesList = csvFileReader.dictionaryOfListsByStatus.get(status);
 
         Map<LocalDate, Integer> casesMap = new LinkedHashMap<>();
@@ -36,16 +40,17 @@ public class ChartDataService {
         return new ChartStats(country, status, casesMap);
     }
 
-    public ChartStats reportGlobalChartDataInTimeRange(FileType status, LocalDate startDate, LocalDate endDate) {
+    public ChartStats reportGlobalChartDataInAllTheTime(FileType status) {
 
         List<CSVRecord> casesList = csvFileReader.dictionaryOfListsByStatus.get(status);
 
         Map<LocalDate, Integer> casesMap = new LinkedHashMap<>();
+        LocalDate startDate = LocalDate.parse("2020-01-22");
 
-        while (!startDate.equals(endDate.plusDays(1))) {
+        while (startDate.isBefore(LocalDate.now().minusDays(1))) {
             int cases = covidCasesService.sendPartialGlobalResultsInChosenDate(casesList, startDate);
             casesMap.put(startDate, cases);
-            startDate = startDate.plusDays(1);
+            startDate = startDate.plusDays(15);
         }
         return new ChartStats("Global", status, casesMap);
     }

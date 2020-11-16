@@ -93,6 +93,8 @@ public class CovidCasesService {
         if (date.isBefore(LocalDate.parse("2020-01-22")) || date.equals(LocalDate.now()))
             throw new NoAvailableDataException(date);
 
+        checkIsLastDayUpdateYet(date);
+
         return casesList.stream()
                 .filter(el -> el.get("Country/Region").equals(country))
                 .map(el -> el.get(date.getMonthValue() + "/" + date.getDayOfMonth() + "/" + date.getYear() % 1000))
@@ -111,6 +113,37 @@ public class CovidCasesService {
                 .mapToInt(it -> sendPartialResultsInChosenDate(casesList, it, date))
                 .sum();
 
+    }
+
+
+//    private LocalDate checkIsLastDayUpdateYet(LocalDate date) {
+//        LocalDate finalDate = date;
+//
+//        if (date.equals(LocalDate.now().minusDays(1))) {
+//            List<String> headers = csvFileReader.getHeadersList();
+//
+//            while (!headers.get(headers.size() - 1).equals(date.toString())) {
+//                date = date.minusDays(1);
+//                finalDate = date;
+//            }
+//        }
+//        return finalDate;
+//    }
+
+    private void checkIsLastDayUpdateYet(LocalDate date) {
+
+        if (date.equals(LocalDate.now().minusDays(1))){
+            List<String> headers = csvFileReader.getHeadersList();
+            boolean matchDataset = false;
+            for(int i=0; i<headers.size() - 1 ; i++ ){
+                if (headers.get(i).equals(date.getMonthValue() + "/" + date.getDayOfMonth() + "/" + date.getYear() % 1000)) {
+                    matchDataset = true;
+                    break;
+                }
+            }
+            if(!matchDataset)
+                throw new NoAvailableDataException(date);
+        }
     }
 
 }
