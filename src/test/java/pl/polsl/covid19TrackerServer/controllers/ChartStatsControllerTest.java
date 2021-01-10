@@ -8,18 +8,19 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.polsl.covid19TrackerServer.services.ChartDataService;
-import pl.polsl.covid19TrackerServer.services.CovidCasesService;
+import pl.polsl.covid19TrackerServer.services.TestConfig;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 @SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
+@ContextConfiguration(classes = {TestConfig.class})
 class ChartStatsControllerTest {
 
     @Mock

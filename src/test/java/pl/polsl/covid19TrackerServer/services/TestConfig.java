@@ -14,20 +14,17 @@ public class TestConfig {
     private CovidCasesService covidCasesService;
 
     @Bean
-    public CovidCasesService covidCasesService()
-    {
+    public CovidCasesService covidCasesService() {
         return new CovidCasesService(csvFileReader);
     }
 
     @Bean
-    public ChartDataService chartDataService()
-    {
+    public ChartDataService chartDataService() {
         return new ChartDataService(csvFileReader, covidCasesService);
     }
 
     @Bean
-    public CsvFileReader csvFileReader()
-    {
+    public CsvFileReader csvFileReader() {
         return new CsvFileReader();
     }
 }

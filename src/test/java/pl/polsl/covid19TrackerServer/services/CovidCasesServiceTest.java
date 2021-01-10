@@ -3,7 +3,6 @@ package pl.polsl.covid19TrackerServer.services;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,11 +11,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import pl.polsl.covid19TrackerServer.models.CountryStats;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 @SpringBootTest
@@ -33,8 +31,7 @@ class CovidCasesServiceTest {
     MockMvc mockMvc;
 
     @BeforeEach
-    public void init()
-    {
+    public void init() {
         mockMvc = standaloneSetup(covidCasesService).build();
         mockMvc = standaloneSetup(csvFileReader).build();
     }
