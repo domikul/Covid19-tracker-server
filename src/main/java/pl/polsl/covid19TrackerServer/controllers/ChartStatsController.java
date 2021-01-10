@@ -32,7 +32,7 @@ public class ChartStatsController {
         return ResponseEntity.ok(latestCasesList);
     }
 
-    @GetMapping(value = "/global/all/{status}")
+    @GetMapping(value = "/total/global/{status}")
     public ResponseEntity<ChartStats> getGlobalDataForChart(@PathVariable final String status) {
         FileType enumStats = Enum.valueOf(FileType.class, status.toUpperCase());
         final ChartStats latestCasesList = chartDataService.reportGlobalChartDataInAllTheTime(enumStats);

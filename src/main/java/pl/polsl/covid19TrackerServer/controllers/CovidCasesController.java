@@ -21,7 +21,7 @@ public class CovidCasesController {
         this.covidCasesService = covidCasesService;
     }
 
-    @GetMapping(value = "/total/world")
+    @GetMapping(value = "/total/all")
     public ResponseEntity<List<CountryStats>> getWorldLatestData() throws ParseException {
         final List<CountryStats> latestCasesList = covidCasesService.showWorldCasesInTimeRange(null, null);
         return ResponseEntity.ok(latestCasesList);
@@ -39,7 +39,7 @@ public class CovidCasesController {
         return ResponseEntity.ok(latestCases);
     }
 
-    @GetMapping(value = "/partial/world")
+    @GetMapping(value = "/partial/all")
     public ResponseEntity<List<CountryStats>> getAllCountriesDataInTimeRange(@RequestParam(name = "from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate startDate,
                                                                              @RequestParam(name = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endDate) throws ParseException {
         final List<CountryStats> latestCasesList = covidCasesService.showWorldCasesInTimeRange(startDate, endDate);
