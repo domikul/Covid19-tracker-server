@@ -69,12 +69,32 @@ class CovidCasesControllerTest {
     }
 
     @Test
-    void getAllCountriesDataInTimeRange() throws Exception {
+    void getAllCountriesDataInTimeRange_correctDate() throws Exception {
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/covid19Tracker/partial/all?from=2020-05-29&to=2020-05-30")
         )
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void getAllCountriesDataInTimeRange_wrongDate() throws Exception {
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/covid19Tracker/partial/all?from=2020-0-29&to=2020-05-30")
+        )
+                .andDo(print())
+                .andExpect(status().is(400));
+    }
+
+    @Test
+    void getGlobalLatestData_wrongURL() throws Exception {
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/covid19Tracker/tot/glob")
+        )
+                .andDo(print())
+                .andExpect(status().is(404));
     }
 }
